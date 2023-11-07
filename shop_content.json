@@ -1,5 +1,7 @@
 {
     "special": [
-        ["AUTUMN", "150"]
+        ["Autumn Crate", "AUTUMN", 150],
+        ["Casual Crate", "CASUAL", 100],
+        ["Golden Crate", "GOLDEN", 550]
     ]
 }
