@@ -1,3 +1,6 @@
 {
-    "versioninfo": "0.01-beta-release2"
+    "versioninfo": "0.01-beta-release2",
+    "paths": [
+        "pumpkin.py"
+    ]
 }
