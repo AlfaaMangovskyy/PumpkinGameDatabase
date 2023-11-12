@@ -2,6 +2,6 @@
     "versioninfo": "0.02-beta-release1",
     "paths": [
         "graphics/pumpkin_4_Royal.txt",
-        "pumpkin_classes.txt"
+        "pumpkin_classes.py"
     ]
 }
