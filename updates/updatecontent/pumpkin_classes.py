@@ -11,7 +11,9 @@ def get_shop() -> dict:
     # log(str(j.loads(request.text)) + "\n") #
     return j.loads(request.text)
 
-logfile = open("log_classes.txt", "a", encoding="utf-8")
+STARTDIR = "D:/data/Programy/python/Pumpkin/game"
+
+logfile = open(f"{STARTDIR}/log_classes.txt", "a", encoding="utf-8")
 def log(text : str):
     logfile.write(str(text) + "\n")
     logfile.flush()
@@ -77,6 +79,14 @@ class PumpkinType:
         self.max_size = 5.3
         self.golden_odds = 75
         return self
+    def royal(self):
+        self.type_name = "Royal"
+        self.min_points = 745
+        self.max_points = 1456
+        self.min_size = 4.0
+        self.max_size = 4.4
+        self.golden_odds = 25
+        return self
 
 def tabulate(string : str, tab : int) -> str:
     if len(string) > tab:
@@ -93,7 +103,7 @@ class Pumpkin:
         x = round(self.size)
         try:
             # log(f"graphics/pumpkin_{x}_{self.type.type_name}.txt\n") #
-            file = open(f"graphics/pumpkin_{x}_{self.type.type_name}.txt", "r", encoding="utf-8")
+            file = open(f"{STARTDIR}/graphics/pumpkin_{x}_{self.type.type_name}.txt", "r", encoding="utf-8")
             graphics = file.read()
             file.close()
         except:
@@ -181,13 +191,17 @@ class Crate:
         while True:
             try:
                 # log(f"graphics/crate_{self.type.lower()}_{x}.txt\n") #
-                if not f"crate_{self.type.lower()}_{x}.txt" in os.listdir("graphics"): break
-                file = open(f"graphics/crate_{self.type.lower()}_{x}.txt", "r", encoding="utf-8")
+                # log(f"{STARTDIR}/graphics/crate_{self.type.lower()}_{x}.txt")
+                # log(os.listdir(f"{STARTDIR}/graphics"))
+                if not f"crate_{self.type.lower()}_{x}.txt" in os.listdir(f"{STARTDIR}/graphics"): break
+                file = open(f"{STARTDIR}/graphics/crate_{self.type.lower()}_{x}.txt", "r", encoding="utf-8")
                 g = file.read()
                 graphics.append(g)
                 x += 1
                 file.close()
             except:
+                # raise
+                # log(f"{STARTDIR}/graphics/crate_{self.type.lower()}_{x}.txt")
                 break
         if graphics == []: return [" "]
         return graphics
@@ -236,7 +250,7 @@ class Player:
         self.dump_data()
         return pumpkin
     def dump_data(self):
-        file = open(f"accounts/{account_name}.json", "w", encoding="utf-8")
+        file = open(f"{STARTDIR}/accounts/{account_name}.json", "w", encoding="utf-8")
         player_data["crates"] = self.n_crates
         # player_data["pumpkins"] = self.n_pumpkins #
         player_data["golden_leaves"] = self.golden_leaves
@@ -251,7 +265,7 @@ class Player:
     def getpumpkinsort_most_rp(self):
         l = self.pumpkins.copy()
         l.sort(key = get_rp, reverse = True)
-        log(l)
+        # log(l) #
         self.page_sorted_pumpkins = pagesplit(l, 10)
         # log(type(self.page_sorted_pumpkins)) #
         # log(self.page_sorted_pumpkins) #
@@ -321,7 +335,7 @@ class Selector:
 # class PlainSelector: #
 #     def __init__(self, screen, fields : list[list[str]], tabulator ) #
 
-file = open(f"accounts/{account_name}.json", "r", encoding="utf-8")
+file = open(f"{STARTDIR}/accounts/{account_name}.json", "r", encoding="utf-8")
 player_data = j.load(file)
 file.close()
 player = Player(player_data["nick"], player_data["golden_leaves"], player_data["crates"], player_data["pumpkins"], player_data["seeds"])
