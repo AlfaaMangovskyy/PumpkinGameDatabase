@@ -22,6 +22,29 @@ CRATE_OPENING_HEADER = "        # Press Any Key to Open! #"
 
 account_name = "bluespaniel"
 
+PASSIVEPOWERS = [
+    {
+        "TYPE": "Sunny",
+        "NAME": "Foton Emission",
+    },
+    {
+        "TYPE": "Sunny",
+        "NAME": "Foton Attraction",
+    },
+    {
+        "TYPE": "Sunny",
+        "NAME": "Bulb Light",
+    },
+    {
+        "TYPE": "Windy",
+        "NAME": "Standing Storm",
+    },
+    {
+        "TYPE": "Windy",
+        "NAME": "Standing Storm",
+    },
+]
+
 class PumpkinType:
     def normal(self):
         self.type_name = "Normal"
@@ -94,11 +117,13 @@ def tabulate(string : str, tab : int) -> str:
     return string + " " * (tab - len(string))
 
 class Pumpkin:
-    def __init__(self, pumpkin_type : PumpkinType, points : int, size : float, is_golden : bool):
+    def __init__(self, pumpkin_type : PumpkinType, points : int, size : float, is_golden : bool, power_active : str, power_passive : str):
         self.type = pumpkin_type
         self.points = points
         self.size = size
         self.is_golden = is_golden
+        self.power_active = power_active
+        self.power_passive = power_passive
     def get_graphic(self) -> str:
         x = round(self.size)
         try:
