@@ -4,6 +4,7 @@ from typing import Any
 import json as j
 import os
 import requests as rq
+import json_obfuscator as jobs
 
 def get_shop() -> dict:
     "Gets the current online shop from GitHub."
@@ -22,28 +23,54 @@ CRATE_OPENING_HEADER = "        # Press Any Key to Open! #"
 
 account_name = "bluespaniel"
 
-PASSIVEPOWERS = [
-    {
+TYPE_ICONS = {
+    "Sunny": "◌",
+    "Windy": "~",
+    "Rainy": "◍",
+    "Snowy": "*",
+    "Special": "※",
+}
+
+PASSIVEPOWERS = {
+    "FOTON_EMISSION" : {
         "TYPE": "Sunny",
         "NAME": "Foton Emission",
     },
-    {
+    "FOTON_ATTRACTION" : {
         "TYPE": "Sunny",
         "NAME": "Foton Attraction",
     },
-    {
+    "BULB_LIGHT" : {
         "TYPE": "Sunny",
         "NAME": "Bulb Light",
     },
-    {
+    "STANDING_STORM" : {
         "TYPE": "Windy",
         "NAME": "Standing Storm",
     },
-    {
+    "WIND_AMBUSH" : {
         "TYPE": "Windy",
-        "NAME": "Standing Storm",
+        "NAME": "Wind Ambush",
     },
-]
+    "TURBULENCES" : {
+        "TYPE": "Windy",
+        "NAME": "Turbulences",
+    },
+}
+
+ACTIVEPOWERS = {
+    "LASER_BEAM" : {
+        "TYPE" : "Sunny",
+        "NAME" : "Laser Beam",
+    },
+}
+
+def passive_power(name : str) -> dict:
+    "Gets the perfect passivepower."
+    return PASSIVEPOWERS[name]
+def active_power(name : str) -> dict:
+    "Gets the perfect activepower."
+    return ACTIVEPOWERS[name]
 
 class PumpkinType:
     def normal(self):
@@ -53,6 +80,14 @@ class PumpkinType:
         self.min_size = 0.7
         self.max_size = 3.2
         self.golden_odds = 345
+        self.powers_passive = [
+            passive_power("FOTON_EMISSION"),
+            passive_power("FOTON_ATTRACTION"),
+            passive_power("WIND_AMBUSH"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
     def giant(self):
         self.type_name = "Giant"
@@ -61,6 +96,14 @@ class PumpkinType:
         self.min_size = 3.0
         self.max_size = 7.8
         self.golden_odds = 345
+        self.powers_passive = [
+            passive_power("FOTON_EMISSION"),
+            passive_power("FOTON_ATTRACTION"),
+            passive_power("WIND_AMBUSH"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
     def golden(self):
         self.type_name = "Golden"
@@ -69,6 +112,12 @@ class PumpkinType:
         self.min_size = 0.7
         self.max_size = 3.2
         self.golden_odds = 345
+        self.powers_passive = [
+            passive_power("BULB_LIGHT"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
     def flaming(self):
         self.type_name = "Flaming"
@@ -77,6 +126,14 @@ class PumpkinType:
         self.min_size = 0.2
         self.max_size = 1.2
         self.golden_odds = 345
+        self.powers_passive = [
+            passive_power("FOTON_EMISSION"),
+            passive_power("FOTON_ATTRACTION"),
+            passive_power("WIND_AMBUSH"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
     def onion(self):
         self.type_name = "Onion"
@@ -85,6 +142,14 @@ class PumpkinType:
         self.min_size = 0.7
         self.max_size = 4.2
         self.golden_odds = 345
+        self.powers_passive = [
+            passive_power("FOTON_EMISSION"),
+            passive_power("FOTON_ATTRACTION"),
+            passive_power("WIND_AMBUSH"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
     def autumn(self):
         self.type_name = "Autumn"
@@ -93,6 +158,14 @@ class PumpkinType:
         self.min_size = 3.2
         self.max_size = 3.7
         self.golden_odds = 345
+        self.powers_passive = [
+            passive_power("FOTON_EMISSION"),
+            passive_power("FOTON_ATTRACTION"),
+            passive_power("WIND_AMBUSH"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
     def winged(self):
         self.type_name = "Winged"
@@ -101,6 +174,14 @@ class PumpkinType:
         self.min_size = 5.2
         self.max_size = 5.3
         self.golden_odds = 75
+        self.powers_passive = [
+            passive_power("FOTON_EMISSION"),
+            passive_power("FOTON_ATTRACTION"),
+            passive_power("WIND_AMBUSH"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
     def royal(self):
         self.type_name = "Royal"
@@ -109,6 +190,14 @@ class PumpkinType:
         self.min_size = 4.0
         self.max_size = 4.4
         self.golden_odds = 25
+        self.powers_passive = [
+            passive_power("FOTON_EMISSION"),
+            passive_power("FOTON_ATTRACTION"),
+            passive_power("WIND_AMBUSH"),
+        ]
+        self.powers_active = [
+            active_power("LASER_BEAM"),
+        ]
         return self
 
 def tabulate(string : str, tab : int) -> str:
@@ -117,7 +206,7 @@ def tabulate(string : str, tab : int) -> str:
     return string + " " * (tab - len(string))
 
 class Pumpkin:
-    def __init__(self, pumpkin_type : PumpkinType, points : int, size : float, is_golden : bool, power_active : str, power_passive : str):
+    def __init__(self, pumpkin_type : PumpkinType, points : int, size : float, is_golden : bool, power_active : dict, power_passive : dict):
         self.type = pumpkin_type
         self.points = points
         self.size = size
@@ -140,7 +229,8 @@ class Pumpkin:
         p = tabulate(f"{self.points} RP", 8)
         s = tabulate(f"{self.size}m", 5)
         x = " ※" if self.is_golden else ""
-        return f"{n} {p} {s}" + x
+        e = " " + TYPE_ICONS[self.power_passive["TYPE"]] + " " + TYPE_ICONS[self.power_active["TYPE"]]
+        return f"{n} {p} {s}" + x + f" {e}"
     def __repr__(self) -> str:
         return f"\"{self.showcase()}\""
 
@@ -204,7 +294,7 @@ class Crate:
             for i in range(type_rate):
                 pumpkin_fields.append(pumpkin_type)
         selected_pumpkin_type : PumpkinType = r.choice(pumpkin_fields)
-        created_pumpkin = Pumpkin(selected_pumpkin_type, r.randint(selected_pumpkin_type.min_points, selected_pumpkin_type.max_points), r.randint(selected_pumpkin_type.min_size * 10, selected_pumpkin_type.max_size * 10) / 10, True if r.randint(1, round(shop["goldenrates"]*selected_pumpkin_type.golden_odds*CRATE_GOLDEN_ODDS[self.type])) == 1 else False)
+        created_pumpkin = Pumpkin(selected_pumpkin_type, r.randint(selected_pumpkin_type.min_points, selected_pumpkin_type.max_points), r.randint(selected_pumpkin_type.min_size * 10, selected_pumpkin_type.max_size * 10) / 10, True if r.randint(1, round(shop["goldenrates"]*selected_pumpkin_type.golden_odds*CRATE_GOLDEN_ODDS[self.type])) == 1 else False, r.choice(selected_pumpkin_type.powers_active), r.choice(selected_pumpkin_type.powers_passive))
         return created_pumpkin
     def showcase(self) -> str:
         "Returns a showcase of a crate."
@@ -252,7 +342,7 @@ class Player:
             pt = PumpkinType()
             _type = "TYPE"
             _normal = "normal"
-            self.pumpkins.append(Pumpkin(getattr(pt, f"{pumpkin_stats.get(_type, _normal).lower()}")(), pumpkin_stats.get("POINTS", 0), pumpkin_stats.get("SIZE", 1.0), pumpkin_stats.get("GOLDEN", False)))
+            self.pumpkins.append(Pumpkin(getattr(pt, f"{pumpkin_stats.get(_type, _normal).lower()}")(), pumpkin_stats.get("POINTS", 0), pumpkin_stats.get("SIZE", 1.0), pumpkin_stats.get("GOLDEN", False), pumpkin_stats.get("ACTIVE_POWER", {"TYPE": "Sunny", "NAME": "???"}), pumpkin_stats.get("PASSIVE_POWER", {"TYPE": "Sunny", "NAME": "???"})))
         # self.page_sorted_pumpkins = [] #
         # for p in self.pumpkins: #
         self.page_sorted_pumpkins = pagesplit(self.pumpkins, 10)
@@ -284,7 +374,9 @@ class Player:
         for i in self.pumpkins:
             x.append(self._transform_pumpkin(pumpkin = i))
         player_data["pumpkins"] = x
-        j.dump(player_data, file)
+        d = j.dumps(player_data)
+        file.write(jobs.obfuscate(d))
+        file.flush()
         file.close()
         return None
     def getpumpkinsort_most_rp(self):
@@ -296,7 +388,7 @@ class Player:
         # log(self.page_sorted_pumpkins) #
         return pagesplit(l, 10)
     def _transform_pumpkin(self, pumpkin : Pumpkin):
-        return {"TYPE": pumpkin.type.type_name, "POINTS": pumpkin.points, "SIZE": pumpkin.size, "GOLDEN": pumpkin.is_golden}
+        return {"TYPE": pumpkin.type.type_name, "POINTS": pumpkin.points, "SIZE": pumpkin.size, "GOLDEN": pumpkin.is_golden, "PASSIVE_POWER": pumpkin.power_passive, "ACTIVE_POWER": pumpkin.power_active}
     def add_seeds(self, pumpkin_type : PumpkinType, amount : int) -> None:
         if not pumpkin_type.type_name.upper() in self.seeds: self.seeds[pumpkin_type.type_name.upper()] = amount
         else: self.seeds[pumpkin_type.type_name.upper()] += amount
@@ -355,12 +447,14 @@ class Selector:
                 self.screen.addstr(self.base_y + n + 1, self.base_x, f"⁂ {option}")
             else:
                 self.screen.addstr(self.base_y + n + 1, self.base_x, f"  {option}")
+            n += option.count("\n")
         self.screen.refresh()
 
 # class PlainSelector: #
 #     def __init__(self, screen, fields : list[list[str]], tabulator ) #
 
 file = open(f"{STARTDIR}/accounts/{account_name}.json", "r", encoding="utf-8")
-player_data = j.load(file)
+d = file.read()
+player_data = j.loads(jobs.deobfuscate(d))
 file.close()
 player = Player(player_data["nick"], player_data["golden_leaves"], player_data["crates"], player_data["pumpkins"], player_data["seeds"])

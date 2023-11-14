@@ -169,11 +169,15 @@ def app(screen):
             screen.addstr(5, 23, f"◌ {player.viewed_pumpkin.size}m")
             screen.addstr(7, 23, f"| {player.viewed_pumpkin.type.type_name[0].upper() + player.viewed_pumpkin.type.type_name[1:].lower()} Pumpkin Seeds")
             screen.addstr(8, 23, f"| ⁘ {player.seeds[player.viewed_pumpkin.type.type_name.upper()]}")
+            TYPE = "TYPE"
+            NAME = "NAME"
+            screen.addstr(10, 23, f"ACTIVE POWER  | {TYPE_ICONS[player.viewed_pumpkin.power_active[TYPE]]} {player.viewed_pumpkin.power_active[NAME]}")
+            screen.addstr(11, 23, f"PASSIVE POWER | {TYPE_ICONS[player.viewed_pumpkin.power_passive[TYPE]]} {player.viewed_pumpkin.power_passive[NAME]}")
             screen.refresh()
             actions = [f"| UPGRADE       ⁘{round(player.viewed_pumpkin.points / 100)}", f"| TRANSFER      + ⁘3"]
             if player.viewed_pumpkin.type.type_name == "Golden" and not player.viewed_pumpkin.is_golden:
                 actions.append(f"| GOLDEN COVER  ₡1000")
-            action_selector = Selector(screen, 10, 23, f"Actions:", actions, 5)
+            action_selector = Selector(screen, 14, 23, f"Actions:", actions, 5)
             while True:
                 key = screen.getch()
                 # log(key)
@@ -356,5 +360,6 @@ def app(screen):
         elif selected_screen == ScreenTypes.CHALLENGES:
             screen.clear()
             screen.addstr(0, 2, f"<= Back to main menu: ESCAPE")
+            screen.addstr(2, 2, f"⇉ CHALLENGES ⇇")
 
 curses.wrapper(app)
