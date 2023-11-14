@@ -1,5 +1,5 @@
 {
-    "versioninfo": "0.03-beta-release1",
+    "versioninfo": "0.03-beta-release2",
     "paths": [
         "json_obfuscator.py",
         "pumpkin_classes.py",
