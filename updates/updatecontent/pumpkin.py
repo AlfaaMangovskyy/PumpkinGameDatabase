@@ -361,6 +361,7 @@ def app(screen):
             screen.clear()
             screen.addstr(0, 2, f"<= Back to main menu: ESCAPE")
             screen.addstr(2, 2, f"⇉ CHALLENGES ⇇")
+            screen.refresh()
             while True:
                 key = screen.getch()
                 if key in (KEY_ESCAPE1, KEY_ESCAPE2):
