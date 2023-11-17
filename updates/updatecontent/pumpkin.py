@@ -52,6 +52,7 @@ def app(screen):
     GOLDENCOLORPAIR = curses.color_pair(1)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     GOLDENPUMPKINCOLORPAIR = curses.color_pair(2)
+    get_current_challenges()
     while True:
         screen.refresh()
         if selected_screen == ScreenTypes.MAINMENU:
@@ -358,10 +359,12 @@ def app(screen):
                 screen.addstr(9, 2, f" " * 25)
                 continue
         elif selected_screen == ScreenTypes.CHALLENGES:
+            get_current_challenges()
             screen.clear()
             screen.addstr(0, 2, f"<= Back to main menu: ESCAPE")
             screen.addstr(2, 2, f"⇉ CHALLENGES ⇇")
             screen.refresh()
+            player.check_new_challenges()
             while True:
                 key = screen.getch()
                 if key in (KEY_ESCAPE1, KEY_ESCAPE2):

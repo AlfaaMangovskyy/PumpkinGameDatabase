@@ -367,7 +367,7 @@ def get_rp(pumpkin : Pumpkin) -> int:
     return pumpkin.points
 
 class Player:
-    def __init__(self, nick : str, golden_leaves : int, crates : list[str], pumpkins : list[dict], seeds : dict[str, int]):
+    def __init__(self, nick : str, golden_leaves : int, crates : list[str], pumpkins : list[dict], seeds : dict[str, int], challenges : dict, completed_challenges : list):
         self.nick = nick
         self.n_crates = crates
         self.n_pumpkins = pumpkins
@@ -390,6 +390,8 @@ class Player:
         self.selected_page = 0
         self.viewed_pumpkin : Pumpkin | None = None
         self.seeds = seeds
+        self.challenges = challenges
+        self.completed_challenges = completed_challenges
     def open_crate(self, crate_index : int):
         if crate_index > len(self.crates)-1: return None
         crate = self.crates[crate_index]
@@ -411,6 +413,8 @@ class Player:
         # player_data["pumpkins"] = self.n_pumpkins #
         player_data["golden_leaves"] = self.golden_leaves
         player_data["seeds"] = self.seeds
+        player_data["challenges"] = self.challenges
+        player_data["completed_challenges"] = self.completed_challenges
         x = []
         for i in self.pumpkins:
             x.append(self._transform_pumpkin(pumpkin = i))
@@ -445,6 +449,11 @@ class Player:
             self.pumpkins.append(Pumpkin(getattr(pt, f"{pumpkin_stats.get(_type, _normal).lower()}")(), pumpkin_stats.get("POINTS", 0), pumpkin_stats.get("SIZE", 1.0), pumpkin_stats.get("GOLDEN", False)))
         self.page_sorted_pumpkins = pagesplit(self.pumpkins, 10)
         return None
+    def check_new_challenges(self):
+        for challenge_file in os.listdir(f"{STARTDIR}/game/challenges/"):
+            challenge_file = challenge_file.removesuffix(".json")
+            if not challenge_file in self.challenges:
+                self.challenges[challenge_file] = {"STAGE": 0, "PROGRESS": [0, 0, 0]}
 
 class Selector:
     def __init__(self, screen, base_y : int, base_x : int, header : str, options : list[str], _rewrite_clear_range : int):
@@ -498,4 +507,4 @@ file = open(f"{STARTDIR}/accounts/{account_name}.json", "r", encoding="utf-8")
 d = file.read()
 player_data = j.loads(jobs.deobfuscate(d))
 file.close()
-player = Player(player_data["nick"], player_data["golden_leaves"], player_data["crates"], player_data["pumpkins"], player_data["seeds"])
+player = Player(player_data["nick"], player_data["golden_leaves"], player_data["crates"], player_data["pumpkins"], player_data["seeds"], player_data["challenges"], player_data["completed_challenges"])
