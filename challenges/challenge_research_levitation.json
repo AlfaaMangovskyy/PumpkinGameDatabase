@@ -1,0 +1,92 @@
+{
+    "name": "Levitation",
+    "stages": [
+        [
+            {
+                "challenge_type": "GET_PUMPKINS",
+                "details": ["Winged"],
+                "goal": 5,
+                "reward": {
+                    "type": "golden_leaves",
+                    "details": [500]
+                }
+            },
+            {
+                "challenge_type": "GET_ANY_PUMPKINS",
+                "details": [],
+                "goal": 15,
+                "reward": {
+                    "type": "golden_leaves",
+                    "details": [500]
+                }
+            },
+            {
+                "challenge_type": "OPEN_ANY_CRATES",
+                "details": [],
+                "goal": 15,
+                "reward": {
+                    "type": "golden_leaves",
+                    "details": [500]
+                }
+            }
+        ],
+        [
+            {
+                "challenge_type": "OPEN_CRATES",
+                "details": ["WINGED"],
+                "goal": 5,
+                "reward": {
+                    "type": "crates",
+                    "details": ["WINGED", 3]
+                }
+            },
+            {
+                "challenge_type": "OPEN_CRATES",
+                "details": ["WINGED"],
+                "goal": 15,
+                "reward": {
+                    "type": "crates",
+                    "details": ["GOLDEN", 1]
+                }
+            },
+            {
+                "challenge_type": "OPEN_CRATES",
+                "details": ["WINGED"],
+                "goal": 35,
+                "reward": {
+                    "type": "crates",
+                    "details": ["LUCKY", 1]
+                }
+            }
+        ],
+        [
+            {
+                "challenge_type": "INSTANT_CLAIMS",
+                "details": [],
+                "goal": 0,
+                "reward": {
+                    "type": "pumpkins",
+                    "details": ["Winged", 754, 1245, 5.2, 5.3, null, null, true]
+                }
+            },
+            {
+                "challenge_type": "INSTANT_CLAIMS",
+                "details": [],
+                "goal": 0,
+                "reward": {
+                    "type": "pumpkins",
+                    "details": ["Winged", 754, 1245, 5.2, 5.3, null, null, false]
+                }
+            },
+            {
+                "challenge_type": "INSTANT_CLAIMS",
+                "details": [],
+                "goal": 0,
+                "reward": {
+                    "type": "pumpkins",
+                    "details": ["Winged", 754, 1245, 5.2, 5.3, null, null, false]
+                }
+            }
+        ]
+    ]
+}

@@ -19,14 +19,15 @@ def log(text : str):
     logfile.write(str(text) + "\n")
     logfile.flush()
 
+ACCOUNT_BASE = {"name": f"USER", "golden_leaves": 0, "seeds":{}, "crates":[], "pumpkins":[], "challenges":{}, "completed_challenges":[]}
 CRATE_OPENING_HEADER = "        # Press Any Key to Open! #"
 
 account_name = "bluespaniel"
 
 TYPE_ICONS = {
-    "Sunny": "◌",
+    "Sunny": "◎",
     "Windy": "~",
-    "Rainy": "◍",
+    "Rainy": "▽",
     "Snowy": "*",
     "Special": "※",
 }
@@ -56,6 +57,18 @@ PASSIVEPOWERS = {
         "TYPE": "Windy",
         "NAME": "Turbulences",
     },
+    "AUTUMN_WAVES" : {
+        "TYPE": "Rainy",
+        "NAME": "Autumn Waves",
+    },
+    "WATERFALL" : {
+        "TYPE": "Rainy",
+        "NAME": "Waterfall",
+    },
+    "HYDRO_HEX" : {
+        "TYPE": "Rainy",
+        "NAME": "Hydro Hex",
+    },
 }
 
 ACTIVEPOWERS = {
@@ -64,6 +77,34 @@ ACTIVEPOWERS = {
         "NAME" : "Laser Beam",
     },
 }
+
+def getfile(extpath : str) -> str | None:
+    """
+    Gets the file from github
+    """
+
+    request = rq.get(LINK+"/"+extpath)
+
+    if request.status_code == 200:
+        return request.text
+    else:
+        return None
+
+def get_current_challenges() -> dict | None:
+    challenge_list = j.loads(getfile("challenges/challenge_list.json"))
+    for challenge_name in challenge_list:
+        # challenge_file #
+        challenge_steps = getfile(f"challenges/{challenge_name}.json")
+        file = open(f"{STARTDIR}/game/challenges/{challenge_name}.json", "w")
+        file.write(jobs.obfuscate(challenge_steps))
+        file.flush()#[[]]#
+        file.close()#[[]]#
+def get_challenge(name : str) -> dict:
+    "Gets the challenge content from local files."
+    file = open(f"{STARTDIR}/game/challenges/{name}.json", "r")
+    data = j.loads(jobs.deobfuscate(file.read()))
+    file.close()
+    return data
 
 def passive_power(name : str) -> dict:
     "Gets the perfect passivepower."
