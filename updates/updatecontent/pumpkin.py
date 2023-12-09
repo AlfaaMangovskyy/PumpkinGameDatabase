@@ -42,6 +42,19 @@ class ScreenTypes(Enum):
     CHALLENGES = "CHALLENGES"
 
 selected_screen = ScreenTypes.MAINMENU
+curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_BLACK)
+curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
+curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
+def coloured_graphic(screen, y, x, filename : str) -> None:
+    f"Places the coloured graphic read from the file in `filename` on `screen`'s `x` and `y`."
+    file = open(f"{STARTDIR}/graphics/{filename}", encoding="utf-8")
+    data = j.load(file)
+    file.close()
+    place_coloured_graphic(screen, y, x, data)
 
 def app(screen):
     global selected_screen
@@ -365,6 +378,7 @@ def app(screen):
             screen.addstr(2, 2, f"⇉ CHALLENGES ⇇")
             screen.refresh()
             player.check_new_challenges()
+            challenge_selector = Selector(screen, 4, 2, "~  Current Challenges:  ~")
             while True:
                 key = screen.getch()
                 if key in (KEY_ESCAPE1, KEY_ESCAPE2):
@@ -373,5 +387,6 @@ def app(screen):
                 else:
                     continue
             if selected_screen != ScreenTypes.CHALLENGES: continue
+            # player.sus() #
 
 curses.wrapper(app)

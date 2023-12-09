@@ -5,12 +5,35 @@ import json as j
 import os
 import requests as rq
 import json_obfuscator as jobs
+import curses
 
 def get_shop() -> dict:
     "Gets the current online shop from GitHub."
     request = rq.get("https://github.com/AlfaaMangovskyy/PumpkinGameDatabase/raw/master/shop_content.json")
     # log(str(j.loads(request.text)) + "\n") #
     return j.loads(request.text)
+
+curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_BLACK)
+curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
+curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
+
+def get_colour(id : int):
+    return curses.color_pair(id)
+
+def place_coloured_graphic(screen, y, x, data : list) -> None:
+    line_add = 0
+    pos_add = 0
+    for line in data:
+        pos_add = 0
+        for char, colour in line:
+            screen.addstr(y + line_add, x + pos_add, char, get_colour(colour))
+            pos_add += 1
+        line_add += 1
+    screen.update()
 
 STARTDIR = "D:/data/Programy/python/Pumpkin/game"
 
@@ -83,7 +106,7 @@ def getfile(extpath : str) -> str | None:
     Gets the file from github
     """
 
-    request = rq.get(LINK+"/"+extpath)
+    request = rq.get("https://github.com/AlfaaMangovskyy/PumpkinGameDatabase/raw/master/"+extpath)
 
     if request.status_code == 200:
         return request.text
@@ -258,9 +281,15 @@ class Pumpkin:
         x = round(self.size)
         try:
             # log(f"graphics/pumpkin_{x}_{self.type.type_name}.txt\n") #
-            file = open(f"{STARTDIR}/graphics/pumpkin_{x}_{self.type.type_name}.txt", "r", encoding="utf-8")
-            graphics = file.read()
-            file.close()
+            pumpkin_graphics_listdir = os.listdir(f"{STARTDIR}/graphics/pumpkins/")
+            if f"n_pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic" in pumpkin_graphics_listdir:
+                file = open(f"{STARTDIR}/graphics/pumpkins/pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic", "r", encoding="utf-8")
+                graphics = file.read()
+                file.close()
+            else:
+                file = open(f"{STARTDIR}/graphics/pumpkins/pumpkin_{x}_{self.type.type_name}.txt", "r", encoding="utf-8")
+                graphics = file.read()
+                file.close()
         except:
             return " "
         return graphics
@@ -454,6 +483,79 @@ class Player:
             challenge_file = challenge_file.removesuffix(".json")
             if not challenge_file in self.challenges:
                 self.challenges[challenge_file] = {"STAGE": 0, "PROGRESS": [0, 0, 0]}
+    def progress_GET_ANY_PUMPKINS(self):
+        for challenge_name, challenge_player_data in self.challenges.items():
+            challenge_file = open(f"{STARTDIR}/game/challenges/{challenge_name}.json")
+            challenge_data = j.loads(jobs.deobfuscate(challenge_file.read()))
+            current_stage = challenge_data["stages"][challenge_player_data["STAGE"]]
+            x = 0
+            for task in current_stage:
+                if task["challenge_type"] == "GET_ANY_PUMPKINS" and challenge_player_data["PROGRESS"][x] != -1:
+                    challenge_player_data["PROGRESS"][x] += 1
+                    if task["goal"] <= challenge_player_data["PROGRESS"][x]:
+                        challenge_player_data["PROGRESS"][x] = -1
+                        # self.claim_reward(task["reward"]) #
+                        self.dump_data()
+                    break
+                x += 1
+    def claim_reward(self, reward : dict) -> None:
+        "Claims a reward from DICTIONARY `dict`."
+        DETAILS = "details"
+        match reward["type"]:
+            case "golden_leaves":
+                self.golden_leaves += reward["details"][0]
+                self.dump_data()
+            case "crates":
+                for i in range(reward["details"][1]):
+                    self.n_crates.append(reward["details"][0])
+                    self.crates.append(Crate(reward["details"][0].upper(), getattr(CrateTypes, f"CRATE_{reward[DETAILS][0].upper()}").value))
+                self.dump_data()
+            case "pumpkins":
+                pumpkintype = PumpkinType()
+                getattr(pumpkintype, f"{reward[DETAILS][0].lower()}")()
+                pumpkin_points = r.randint(reward[DETAILS][1], reward[DETAILS][2])
+                pumpkin_size = r.randint(reward[DETAILS][3] * 10, reward[DETAILS][4] * 10) / 10
+                if reward[DETAILS][5] == None:
+                    pumpkin_active_power = active_power(reward[DETAILS][5])
+                else:
+                    pumpkin_active_power = r.choice(pumpkintype.powers_active)
+                if reward[DETAILS][6] == None:
+                    pumpkin_passive_power = passive_power(reward[DETAILS][6])
+                else:
+                    pumpkin_passive_power = r.choice(pumpkintype.powers_passive)
+                pumpkin_is_golden = reward[DETAILS][7]
+                pumpkin = Pumpkin(pumpkintype, pumpkin_points, pumpkin_size, pumpkin_is_golden, pumpkin_active_power, pumpkin_passive_power)
+                self.pumpkins.append(pumpkin)
+                self.dump_data()
+
+def get_task_desc(task : dict) -> str:
+    "Get the text description of a task."
+    DETAILS = "details"
+    GOAL = "goal"
+    match task["challenge_type"]:
+        case "GET_PUMPKINS":
+            return f"Get {task[GOAL]} {task[DETAILS][0]} Pumpkins."
+        case "GET_ANY_PUMPKINS":
+            return f"Get {task[GOAL]} of any pumpkin."
+        case "OPEN_CRATES":
+            return f"Open {task[GOAL]} {task[DETAILS][0].lower()} crates."
+        case "OPEN_ANY_CRATES":
+            return f"Open {task[GOAL]} of any crate."
+        case "INSTANT_CLAIMS":
+            return f"Click to claim!"
+        case _:
+            return f"Unknown task type"
+
+def get_challenge_task_description(data : dict, completion : dict) -> str:
+    "Gets the task description."
+    # data_challenge_name = data["name"]
+    data_current_stage = data["stages"][completion["STAGE"]]
+    descriptions = []
+    # STAGE = "STAGE"
+    # STAGES = "stages"
+    for task in data_current_stage:
+        descriptions.append(f" // {get_task_desc(task)}")
+    return descriptions
 
 class Selector:
     def __init__(self, screen, base_y : int, base_x : int, header : str, options : list[str], _rewrite_clear_range : int):
