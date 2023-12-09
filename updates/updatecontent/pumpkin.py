@@ -42,30 +42,42 @@ class ScreenTypes(Enum):
     CHALLENGES = "CHALLENGES"
 
 selected_screen = ScreenTypes.MAINMENU
-curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
-curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_BLACK)
-curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
-curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
-curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
-def coloured_graphic(screen, y, x, filename : str) -> None:
-    f"Places the coloured graphic read from the file in `filename` on `screen`'s `x` and `y`."
-    file = open(f"{STARTDIR}/graphics/{filename}", encoding="utf-8")
-    data = j.load(file)
-    file.close()
-    place_coloured_graphic(screen, y, x, data)
 
 def app(screen):
     global selected_screen
     screen.clear()
     screen.addstr(0, 2, LOGO)
     screen.addstr(7, 2, "A pumpkin collecting game")
-    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_YELLOW)
-    GOLDENCOLORPAIR = curses.color_pair(1)
-    curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    GOLDENPUMPKINCOLORPAIR = curses.color_pair(2)
-    get_current_challenges()
+    curses.init_pair(11, curses.COLOR_BLACK, curses.COLOR_YELLOW)
+    GOLDENCOLORPAIR = curses.color_pair(11)
+    curses.init_pair(12, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    GOLDENPUMPKINCOLORPAIR = curses.color_pair(12)
+    curses.init_pair(21, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(22, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(23, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(24, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(25, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+    curses.init_pair(26, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.init_pair(27, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    def get_colour(id : int):
+        return curses.color_pair(id)
+    def place_coloured_graphic(screen, y, x, data : list) -> None:
+        line_add = 0
+        pos_add = 0
+        for line in data:
+            pos_add = 0
+            for char, colour in line:
+                screen.addstr(y + line_add, x + pos_add, char, get_colour(20 + colour))
+                pos_add += 1
+            line_add += 1
+        screen.refresh()
+    def coloured_graphic(screen, y, x, filename : str) -> None:
+        f"Places the coloured graphic read from the file in `filename` on `screen`'s `x` and `y`."
+        file = open(f"{STARTDIR}/graphics/{filename}", encoding="utf-8")
+        data = j.load(file)
+        file.close()
+        place_coloured_graphic(screen, y, x, data)
+    # get_current_challenges()
     while True:
         screen.refresh()
         if selected_screen == ScreenTypes.MAINMENU:
@@ -170,15 +182,16 @@ def app(screen):
         elif selected_screen == ScreenTypes.PUMPKIN_VIEW:
             screen.clear()
             screen.addstr(0, 2, "<= Back to pumpkin collection: ESCAPE")
-            graphic = player.viewed_pumpkin.get_graphic().replace("\n", "\n  ")
+            # graphic = player.viewed_pumpkin.get_graphic().replace("\n", "\n  ") #
+            log(f"pumpkins/n_pumpkin_{round(player.viewed_pumpkin.size)}_{player.viewed_pumpkin.type.type_name}_{str(player.viewed_pumpkin.is_golden).lower()}.pgraphic")
             if not player.viewed_pumpkin.is_golden:
-                screen.addstr(2, 2, f"{graphic}")
+                coloured_graphic(screen, 2, 2, f"pumpkins/n_pumpkin_{round(player.viewed_pumpkin.size)}_{player.viewed_pumpkin.type.type_name}_{str(player.viewed_pumpkin.is_golden).lower()}.pgraphic")
             else:
-                screen.addstr(2, 2, f"{graphic}", GOLDENPUMPKINCOLORPAIR)
+                coloured_graphic(screen, 2, 2, f"pumpkins/n_pumpkin_{round(player.viewed_pumpkin.size)}_{player.viewed_pumpkin.type.type_name}_{str(player.viewed_pumpkin.is_golden).lower()}.pgraphic")
             if not player.viewed_pumpkin.is_golden:
                 screen.addstr(2, 23, f"{player.viewed_pumpkin.type.type_name} Pumpkin")
             else:
-                screen.addstr(2, 23, f"{player.viewed_pumpkin.type.type_name} Pumpkin", GOLDENCOLORPAIR)
+                screen.addstr(2, 23, f"{player.viewed_pumpkin.type.type_name} Pumpkin", GOLDENPUMPKINCOLORPAIR)
             screen.addstr(3, 23, f"⁂ {player.viewed_pumpkin.points} RP ⁂")
             screen.addstr(5, 23, f"◌ {player.viewed_pumpkin.size}m")
             screen.addstr(7, 23, f"| {player.viewed_pumpkin.type.type_name[0].upper() + player.viewed_pumpkin.type.type_name[1:].lower()} Pumpkin Seeds")

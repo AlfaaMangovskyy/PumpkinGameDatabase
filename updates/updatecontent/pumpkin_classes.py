@@ -13,27 +13,13 @@ def get_shop() -> dict:
     # log(str(j.loads(request.text)) + "\n") #
     return j.loads(request.text)
 
-curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
-curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_BLACK)
-curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
-curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
-curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
-
-def get_colour(id : int):
-    return curses.color_pair(id)
-
-def place_coloured_graphic(screen, y, x, data : list) -> None:
-    line_add = 0
-    pos_add = 0
-    for line in data:
-        pos_add = 0
-        for char, colour in line:
-            screen.addstr(y + line_add, x + pos_add, char, get_colour(colour))
-            pos_add += 1
-        line_add += 1
-    screen.update()
+# curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+# curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+# curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_BLACK)
+# curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+# curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+# curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
+# curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
 STARTDIR = "D:/data/Programy/python/Pumpkin/game"
 
@@ -42,7 +28,8 @@ def log(text : str):
     logfile.write(str(text) + "\n")
     logfile.flush()
 
-ACCOUNT_BASE = {"name": f"USER", "golden_leaves": 0, "seeds":{}, "crates":[], "pumpkins":[], "challenges":{}, "completed_challenges":[]}
+# {"nick": "bluespaniel", "golden_leaves": 100000, "seeds":{}, "crates":[], "pumpkins":[], "challenges":{}, "completed_challenges":[]} #
+ACCOUNT_BASE = {"nick": f"USER", "golden_leaves": 0, "seeds":{}, "crates":[], "pumpkins":[], "challenges":{}, "completed_challenges":[]}
 CRATE_OPENING_HEADER = "        # Press Any Key to Open! #"
 
 account_name = "bluespaniel"
@@ -118,7 +105,7 @@ def get_current_challenges() -> dict | None:
     for challenge_name in challenge_list:
         # challenge_file #
         challenge_steps = getfile(f"challenges/{challenge_name}.json")
-        file = open(f"{STARTDIR}/game/challenges/{challenge_name}.json", "w")
+        file = open(f"{STARTDIR}/challenges/{challenge_name}.json", "w")
         file.write(jobs.obfuscate(challenge_steps))
         file.flush()#[[]]#
         file.close()#[[]]#
@@ -283,7 +270,7 @@ class Pumpkin:
             # log(f"graphics/pumpkin_{x}_{self.type.type_name}.txt\n") #
             pumpkin_graphics_listdir = os.listdir(f"{STARTDIR}/graphics/pumpkins/")
             if f"n_pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic" in pumpkin_graphics_listdir:
-                file = open(f"{STARTDIR}/graphics/pumpkins/pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic", "r", encoding="utf-8")
+                file = open(f"{STARTDIR}/graphics/pumpkins/n_pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic", "r", encoding="utf-8")
                 graphics = file.read()
                 file.close()
             else:
