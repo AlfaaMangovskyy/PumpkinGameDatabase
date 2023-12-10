@@ -1,8 +1,9 @@
 {
-    "versioninfo": "0.04-beta-release1",
+    "versioninfo": "0.04-beta-release2",
     "paths": [
         "json_obfuscator.py",
         "pumpkin_classes.py",
-        "pumpkin.py"
+        "pumpkin.py",
+        "graphics/shopbanner.pgraphic"
     ]
 }
