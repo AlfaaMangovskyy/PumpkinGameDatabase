@@ -270,6 +270,8 @@ class Pumpkin:
             # log(f"graphics/pumpkin_{x}_{self.type.type_name}.txt\n") #
             pumpkin_graphics_listdir = os.listdir(f"{STARTDIR}/graphics/pumpkins/")
             if f"n_pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic" in pumpkin_graphics_listdir:
+                log(f"n_pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic")
+                log(f"{STARTDIR}/graphics/pumpkins/n_pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic")
                 file = open(f"{STARTDIR}/graphics/pumpkins/n_pumpkin_{x}_{self.type.type_name}_{str(self.is_golden).lower()}.pgraphic", "r", encoding="utf-8")
                 graphics = file.read()
                 file.close()
@@ -365,9 +367,11 @@ class Crate:
                 # log(f"graphics/crate_{self.type.lower()}_{x}.txt\n") #
                 # log(f"{STARTDIR}/graphics/crate_{self.type.lower()}_{x}.txt")
                 # log(os.listdir(f"{STARTDIR}/graphics"))
-                if not f"n_crate_{self.type.lower()}_{x}.txt" in os.listdir(f"{STARTDIR}/graphics/crates/"): break
-                file = open(f"{STARTDIR}/graphics/crates/n_crate_{self.type.lower()}_{x}.txt", "r", encoding="utf-8")
-                g = file.read()
+                log(f"n_crate_{self.type.lower()}_{x}.txt.pgraphic")
+                log(f"{STARTDIR}/graphics/crates/n_crate_{self.type.lower()}_{x}.txt.pgraphic")
+                if not f"n_crate_{self.type.lower()}_{x}.txt.pgraphic" in os.listdir(f"{STARTDIR}/graphics/crates/"): break
+                file = open(f"{STARTDIR}/graphics/crates/n_crate_{self.type.lower()}_{x}.txt.pgraphic", "r", encoding="utf-8")
+                g = j.loads(file.read())
                 graphics.append(g)
                 x += 1
                 file.close()

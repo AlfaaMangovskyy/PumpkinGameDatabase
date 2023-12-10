@@ -62,22 +62,22 @@ def app(screen):
     curses.init_pair(27, curses.COLOR_WHITE, curses.COLOR_BLACK)
     def get_colour(id : int):
         return curses.color_pair(id)
-    def place_coloured_graphic(screen, y, x, data : list) -> None:
+    def place_coloured_graphic(screen, y, x, data : list, tabulator : int = 0) -> None:
         line_add = 0
         pos_add = 0
         for line in data:
             pos_add = 0
             for char, colour in line:
-                screen.addstr(y + line_add, x + pos_add, char, get_colour(20 + colour))
+                screen.addstr(y + line_add, x + pos_add + tabulator, char, get_colour(20 + colour))
                 pos_add += 1
             line_add += 1
         screen.refresh()
-    def coloured_graphic(screen, y, x, filename : str) -> None:
+    def coloured_graphic(screen, y, x, filename : str, tabulator : int = 0) -> None:
         f"Places the coloured graphic read from the file in `filename` on `screen`'s `x` and `y`."
         file = open(f"{STARTDIR}/graphics/{filename}", encoding="utf-8")
         data = j.load(file)
         file.close()
-        place_coloured_graphic(screen, y, x, data)
+        place_coloured_graphic(screen, y, x, data, tabulator = tabulator)
     # get_current_challenges()
     shop_pos = 0
     while True:
@@ -320,6 +320,7 @@ def app(screen):
             # log(graphics) #
             screen.clear()
             screen.addstr(2, 0, CRATE_OPENING_HEADER)
+            log(graphics)
             place_coloured_graphic(screen, 4, 0, graphics[0])
             screen.addstr(0, 0, "<= CANCEL: ESCAPE")
             screen.refresh()
@@ -332,10 +333,7 @@ def app(screen):
                 sleep(0.2)
             sleep(0.3)
             screen.clear()
-            if not pumpkin.is_golden:
-                place_coloured_graphic(screen, 4, 10, pumpkin.get_graphic())
-            else:
-                place_coloured_graphic(screen, 4, 10, pumpkin.get_graphic())
+            coloured_graphic(screen, 2, 2, f"pumpkins/n_pumpkin_{round(pumpkin.size)}_{pumpkin.type.type_name}_{str(pumpkin.is_golden).lower()}.pgraphic", tabulator = 10)
             screen.refresh()
             sleep(1.00)
             screen.clear()
