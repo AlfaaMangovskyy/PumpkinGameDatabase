@@ -79,6 +79,7 @@ def app(screen):
         file.close()
         place_coloured_graphic(screen, y, x, data)
     # get_current_challenges()
+    shop_pos = 0
     while True:
         screen.refresh()
         if selected_screen == ScreenTypes.MAINMENU:
