@@ -365,8 +365,8 @@ class Crate:
                 # log(f"graphics/crate_{self.type.lower()}_{x}.txt\n") #
                 # log(f"{STARTDIR}/graphics/crate_{self.type.lower()}_{x}.txt")
                 # log(os.listdir(f"{STARTDIR}/graphics"))
-                if not f"crate_{self.type.lower()}_{x}.txt" in os.listdir(f"{STARTDIR}/graphics"): break
-                file = open(f"{STARTDIR}/graphics/crate_{self.type.lower()}_{x}.txt", "r", encoding="utf-8")
+                if not f"n_crate_{self.type.lower()}_{x}.txt" in os.listdir(f"{STARTDIR}/graphics/crates/"): break
+                file = open(f"{STARTDIR}/graphics/crates/n_crate_{self.type.lower()}_{x}.txt", "r", encoding="utf-8")
                 g = file.read()
                 graphics.append(g)
                 x += 1

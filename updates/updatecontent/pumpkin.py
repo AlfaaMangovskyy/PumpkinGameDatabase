@@ -29,9 +29,9 @@ def log(text : str):
     logfile.write(str(text) + "\n")
     logfile.flush()
 
-bannerfile = open(f"{STARTDIR}/graphics/shopbanner.txt", "r", encoding="utf-8")
-BANNER = bannerfile.read()
-bannerfile.close()
+# bannerfile = open(f"{STARTDIR}/graphics/shopbanner.pgraphic", "r", encoding="utf-8")
+# BANNER = bannerfile.read()
+# bannerfile.close()
 
 class ScreenTypes(Enum):
     MAINMENU = "MAINMENU"
@@ -42,6 +42,7 @@ class ScreenTypes(Enum):
     CHALLENGES = "CHALLENGES"
 
 selected_screen = ScreenTypes.MAINMENU
+shop_pos = 0
 
 def app(screen):
     global selected_screen
@@ -318,22 +319,22 @@ def app(screen):
             # log(graphics) #
             screen.clear()
             screen.addstr(2, 0, CRATE_OPENING_HEADER)
-            screen.addstr(4, 0, graphics[0])
+            place_coloured_graphic(screen, 4, 0, graphics[0])
             screen.addstr(0, 0, "<= CANCEL: ESCAPE")
             screen.refresh()
             if screen.getch() in (KEY_ESCAPE1, KEY_ESCAPE2): continue
             pumpkin : Pumpkin = player.open_crate(crate_selector.pos) #
             for g in graphics[1:]:
                 screen.clear()
-                screen.addstr(4, 0, g)
+                place_coloured_graphic(screen, 4, 0, g)
                 screen.refresh()
                 sleep(0.2)
             sleep(0.3)
             screen.clear()
             if not pumpkin.is_golden:
-                screen.addstr(4, 10, pumpkin.get_graphic().replace("\n", "\n" + " "*10))
+                place_coloured_graphic(screen, 4, 10, pumpkin.get_graphic())
             else:
-                screen.addstr(4, 10, pumpkin.get_graphic().replace("\n", "\n" + " "*10), GOLDENPUMPKINCOLORPAIR)
+                place_coloured_graphic(screen, 4, 10, pumpkin.get_graphic())
             screen.refresh()
             sleep(1.00)
             screen.clear()
@@ -342,21 +343,26 @@ def app(screen):
         elif selected_screen == ScreenTypes.SHOP:
             screen.clear()
             screen.addstr(0, 2, f"<= Back to main menu: ESCAPE                ₡ {player.golden_leaves}")
-            screen.addstr(2, 0, BANNER)
+            coloured_graphic(screen, 2, 0, f"shopbanner.pgraphic")
             screen.addstr(8, 2, f"₡₡₡₡ SHOP ₡₡₡₡")
             screen.refresh()
             shop_selector_special = Selector(screen, 10, 2, "Offers:", [f"₡{x[2]} " + x[0] for x in shop["special"]], 10)
+            shop_selector_special.pos = shop_pos
             while True:
                 key = screen.getch()
                 if key == KEY_UP:
                     shop_selector_special.move_up()
+                    shop_pos = shop_selector_special.pos
                 elif key == KEY_DOWN:
                     shop_selector_special.move_down()
+                    shop_pos = shop_selector_special.pos
                 elif key == KEY_ENTER:
                     # pass #
+                    shop_pos = shop_selector_special.pos
                     break
                 elif key in (KEY_ESCAPE1, KEY_ESCAPE2):
                     selected_screen = ScreenTypes.MAINMENU
+                    shop_pos = shop_selector_special.pos
                     break
                 shop_selector_special.rewrite()
             if selected_screen != ScreenTypes.SHOP: continue
@@ -367,9 +373,9 @@ def app(screen):
                 player.n_crates.append(selected_offer[1])
                 player.crates.append(Crate(selected_offer[1].upper(), getattr(CrateTypes, f"CRATE_{selected_offer[1].upper()}").value))
                 player.dump_data()
-                screen.addstr(9, 2, f"₡ PURCHASE SUCCESSFULL! ₡")
+                screen.addstr(9, 2, f"₡ PURCHASE SUCCESSFULL! Any key to continue... ₡")
                 screen.refresh()
-                sleep(1.00)
+                screen.getch()
                 screen.addstr(9, 2, f" " * 25)
                 continue
             elif len(player.crates) == 10:
