@@ -35,11 +35,11 @@ CRATE_OPENING_HEADER = "        # Press Any Key to Open! #"
 account_name = "bluespaniel"
 
 TYPE_ICONS = {
-    "Sunny": "◎",
-    "Windy": "~",
-    "Rainy": "▽",
+    "Sunny": "X",
+    "Windy": "=",
+    "Rainy": "~",
     "Snowy": "*",
-    "Special": "※",
+    "Special": "$",
 }
 
 PASSIVEPOWERS = {

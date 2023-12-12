@@ -378,15 +378,15 @@ def app(screen):
                 screen.addstr(9, 2, f" " * 25)
                 continue
             elif len(player.crates) == 10:
-                screen.addstr(9, 2, f"You have maximum amount of crates!")
+                screen.addstr(9, 2, f"You have maximum amount of crates! Any key to continue...")
                 screen.refresh()
-                sleep(1.00)
+                screen.getch()
                 screen.addstr(9, 2, f" " * 25)
                 continue
             else:
-                screen.addstr(9, 2, f"You don't have enough golden leaves!")
+                screen.addstr(9, 2, f"You don't have enough golden leaves! Any key to continue...")
                 screen.refresh()
-                sleep(1.00)
+                screen.getch()
                 screen.addstr(9, 2, f" " * 25)
                 continue
         elif selected_screen == ScreenTypes.CHALLENGES:
